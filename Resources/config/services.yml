@@ -90,3 +90,9 @@ services:
         arguments: [@service_container]
         tags:
             - { name: twig.extension }
+    
+    punk_ave.twig.file_extension:
+        class: PunkAve\FileUploaderBundle\Twig\DoctrineFileExtension
+        arguments: ["@service_container", "@doctrine.orm.entity_manager"]
+        tags:
+            - { name: twig.extension, alias: punkave_doctrine_extension }
