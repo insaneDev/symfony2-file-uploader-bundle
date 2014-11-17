@@ -68,7 +68,7 @@ class FileUploader
      * from others.
      *
      */
-    public function handleFileUpload($options = array())
+    public function handleFileUpload($options = array(), $output = true)
     {
         if (!isset($options['folder']))
         {
@@ -118,13 +118,15 @@ class FileUploader
         // keeping the blueimp implementation which goes straight to the PHP standard library.
         // TODO: would be nice to port that code fully to Symfonyspeak.
 
-        header('Pragma: no-cache');
-        header('Cache-Control: no-store, no-cache, must-revalidate');
-        header('Content-Disposition: inline; filename="files.json"');
-        header('X-Content-Type-Options: nosniff');
-        header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Methods: OPTIONS, HEAD, GET, POST, PUT, DELETE');
-        header('Access-Control-Allow-Headers: X-File-Name, X-File-Type, X-File-Size');
+        $headers = array();
+        $headers[] = array('Pragma' => 'no-cache');
+        $headers[] = array('Cache-Control' => 'no-store, no-cache, must-revalidate');
+        $headers[] = array('Content-Disposition' => 'inline; filename="files.json"');
+        $headers[] = array('X-Content-Type-Options' => 'nosniff');
+        $headers[] = array('Access-Control-Allow-Origin' => '*');
+        $headers[] = array('Access-Control-Allow-Methods' => 'OPTIONS, HEAD, GET, POST, PUT, DELETE');
+        $headers[] = array('Access-Control-Allow-Headers' => 'X-File-Name, X-File-Type, X-File-Size');
+
 
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'OPTIONS':
@@ -144,11 +146,28 @@ class FileUploader
                 $upload_handler->delete();
                 break;
             default:
-                header('HTTP/1.1 405 Method Not Allowed');
+                 $headers[] = array('HTTP/1.1 405 Method Not Allowed');
         }
 
-        // Without this Symfony will try to respond; the BlueImp upload handler class already did,
-        // so it's time to hush up
-        exit(0);
+        if($output):
+            array_map(array($this, 'outputHeader'), $headers);
+            // Without this Symfony will try to respond; the BlueImp upload handler class already did,
+            // so it's time to hush up
+            exit(0);
+        else:
+
+            return array('headers' => $headers, 'handler' => $upload_handler);
+
+        endif;
+
+    }
+
+    /**
+     * 
+     */
+    private function outputHeader($header)
+    {
+        list($key, $value) = each($header);
+        header(sprintf('%s: %s', $key, $value));
     }
 }
