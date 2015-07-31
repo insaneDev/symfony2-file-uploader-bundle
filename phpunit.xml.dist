@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="false"
+        >
+
+    <testsuites>
+        <testsuite name="File Uploader Bundle Test Suite">
+            <directory>./tests/</directory>
+        </testsuite>
+    </testsuites>
+
+    <groups>
+        <exclude>
+            <group>performance</group>
+            <group>locking_functional</group>
+        </exclude>
+    </groups>
+
+</phpunit>
